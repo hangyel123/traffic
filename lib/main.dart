@@ -1,58 +1,81 @@
 import 'package:flutter/material.dart';
+import './screens/Bus.dart';
+import './screens/Downtown.dart';
+import './screens/MyPage.dart';
+import './screens/Out_Of_Town.dart';
+import './screens/alarm.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'YUB',
       home: MainPage(),
+      routes: {
+        '/alarm': (context) => AlarmScreen(),
+      },
     );
   }
 }
 
-class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  int _selectedIndex = 0;
+  final List<Widget> _pages = [
+    Center(child: Text('홈 페이지')),
+    Center(child: Text('시내 셔틀 페이지')),
+    Center(child: Text('시외 셔틀 페이지')),
+    Center(child: Text('시내 버스 페이지')),
+    Center(child: Text('마이 페이지')),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('로고 이미지'),
         backgroundColor: Colors.white10,
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/alarm');
+            },
           ),
         ],
       ),
-      body: GridView.count(
-        crossAxisCount: 1, // 열의 개수
-        children: List.generate(3, (index) {
-          return Center(
-            child: Container(
-              width: 100, // 박스의 너비
-              height: 100, // 박스의 높이
-              color: Colors.blue, // 박스의 색상
-              child: Center(
-                child: Text('Box ${index + 1}'), // 박스 안에 표시될 텍스트
-              ),
-            ),
+      body: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        child: _pages[_selectedIndex],
+        transitionBuilder: (child, animation) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
           );
-        }),
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.grey,
         unselectedItemColor: Colors.grey,
-        selectedIconTheme: IconThemeData(color: Colors.grey),
+        selectedIconTheme: IconThemeData(color: Colors.green[300]),
         unselectedIconTheme: IconThemeData(color: Colors.grey),
-        selectedLabelStyle: TextStyle(color: Colors.grey),
+        selectedLabelStyle: TextStyle(color: Colors.green[300]),
         unselectedLabelStyle: TextStyle(color: Colors.grey),
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
